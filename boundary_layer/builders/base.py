@@ -21,6 +21,7 @@ from boundary_layer.logger import logger
 from boundary_layer.registry import NodeTypes
 from boundary_layer.util import sanitize_operator_name
 from boundary_layer.containers import WorkflowMetadata
+from boundary_layer.builders.util import order_dict
 
 
 class DagBuilderBase(object):
@@ -74,7 +75,7 @@ class DagBuilderBase(object):
 
         return {
             'modules': modules,
-            'objects': objects,
+            'objects': order_dict(objects),
         }
 
     def __init__(
@@ -143,9 +144,11 @@ class DagBuilderBase(object):
                 generator_nodes & downstream_deps,
                 node.name)
 
+        sorted_operator_args = order_dict(node.operator_args)
+
         return template.render(
             node=node,
-            args=node.operator_args,
+            args=sorted_operator_args,
             upstream_dependencies=list(upstream_deps - generator_nodes),
             downstream_dependencies=list(downstream_deps - generator_nodes),
         )

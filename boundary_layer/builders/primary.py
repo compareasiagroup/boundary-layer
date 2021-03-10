@@ -17,6 +17,7 @@ import datetime
 import boundary_layer
 from boundary_layer.builders.base import DagBuilderBase
 from boundary_layer.schemas.dag import DagArgsSchema
+from boundary_layer.builders.util import order_dict
 
 
 class PrimaryDagBuilder(DagBuilderBase):
@@ -43,8 +44,8 @@ class PrimaryDagBuilder(DagBuilderBase):
         default_task_args = self.dag.get('default_task_args', {})
 
         return template.render(
-            dag_args=dag_args,
-            default_task_args=default_task_args,
+            dag_args=order_dict(dag_args),
+            default_task_args=order_dict(default_task_args),
             imports=self.get_imports(),
             specs=self.specs,
             metadata=self.metadata,

@@ -55,6 +55,14 @@ def enquote(x):
 
     return '"""%s"""' % x
 
+def order_dict(dictionary):
+    result = {}
+    for k, v in sorted(dictionary.items()):
+        if isinstance(v, dict):
+            result[k] = order_dict(v)
+        else:
+            result[k] = v
+    return result
 
 def split_verbatim(value):
     """ Method for handling verbatim indicator characters in strings, which
@@ -125,6 +133,15 @@ def format_value(value):
 
     if isinstance(value, (datetime.datetime, datetime.timedelta, GenericNamedParameterPasser)):
         return format_value('<<{}>>'.format(repr(value)))
+    
+    if isinstance(value, str) and "\n" in value and not (value.startswith("<<") and value.endswith(">>")):
+        single_quote = "\'"
+        double_quote = '\"'
+        q = single_quote
+        if value.startswith(single_quote) or value.endswith(single_quote) or "'''" in value:
+            q = double_quote
+
+        return ('{}{}{}').format(q * 3, value, q * 3)
 
     if not isinstance(value, six.string_types):
         raise Exception('Cannot format value `{}`: no handler for type {}'.format(
