@@ -145,7 +145,6 @@ class DagBuilderBase(object):
                 node.name)
 
         sorted_operator_args = order_dict(node.operator_args)
-
         return template.render(
             node=node,
             args=sorted_operator_args,
